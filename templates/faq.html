@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyACO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.min.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <style>
+        * {
+          font-family:'Montserrat', sans-serif;
+        }
+        .collapsing {
+            -webkit-transition: none;
+            transition: none;
+            display: none;
+        }
+    </style>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="height: 10vh;">
+        <div class="container"><a class="navbar-brand" href="{{ url_for('index') }}" style="font-size: 30px;">EasyACO</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto mobileposition" style="width: 50%;">
+                    <li class="nav-item" role="presentation" style="background-color: #ffffff;"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('providers') }}" style="background-color: #ffffff;">Providers</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link active" href="{{ url_for('faq') }}" style="background-color: #ffffff;">FAQ</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('success') }}" style="background-color: #ffffff;">Success</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('drops') }}" style="background-color: #ffffff;">Drops</a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('discord') }}" style="background-color: #ffffff;">Log In</a></li>
+                    {% else %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('profile',slug=current_user.slug) }}" style="background-color: #ffffff;">Profile</a></li>
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('logout') }}" style="background-color: #ffffff;">Log Out</a></li>
+                    {% endif %}
+                </ul>
+                    {% if not current_user.is_authenticated %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="btn btn-light action-button" role="button" href="{{ url_for('discord') }}" style="background-color: #2a52d8;">Log In</a></span>
+                    {% else %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="login" href="{{ url_for('profile',slug=current_user.slug) }}">Profile</a><a class="btn btn-light action-button" role="button" href="{{ url_for('logout') }}" style="background-color: #2a52d8;">Log Out</a></span>
+                    {% endif %}
+            </div>
+        </div>
+        <style>
+            @media screen and (max-width: 1024px) {
+                .hideaftersize {
+                    display: none !important;
+                }
+            }
+            @media screen and (max-width: 768px) {
+                .mobileoptions {
+                    display: block !important;
+                }
+                .desktopoptions {
+                    display: none !important;
+                }
+                .mobileposition {
+                    position: absolute !important;
+                }
+                .navbar.navbar-light .navbar-nav {
+                    background-color: white;
+                    margin-top: 0px;
+                    border: solid black;
+                    border-width: 0 5px 5px;
+                }
+            }
+        </style>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="row hideaftersize" style="z-index: 9999;height: 100%;width: 100%;max-width: 100%;max-height: 100px;position:absolute;">
+            <div class="col d-flex d-lg-flex justify-content-center align-self-center justify-content-sm-center align-items-sm-center justify-content-xl-center align-items-xl-center">
+                <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
+                    {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <script>
+        $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 2000); // <-- time in milliseconds
+        });
+    </script>
+    <div class="row no-gutters" style="width: 100%;padding-top: 0px;">
+        <div class="col" style="width: 100%;"><img src="{{ url_for('static', filename='assets/img/Bots_Blurred.png') }}" style="width: 100%;max-height: 80px;height: 80px;"></div>
+    </div>
+    <div class="row" style="width: 100%;margin: 0;">
+        <div class="col d-xl-flex justify-content-xl-center">
+            <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                <div class="text-center" style="width: 100%;">
+                    <h1 class="adjustsize" style="text-align:center;padding-top: 2%;width: 100%;white-space: nowrap;">FAQ</h1>
+                    <hr class="float-left" style="text-align;center; color: rgb(0,0,0);background-color: #000000;width:100%;" />
+                </div>
+                <div>
+                    <div class="row d-xl-flex" style="width: 100%;max-width: 100%;margin: 0px;">
+                        <div class="col">
+                            <div>
+                                <h2>1. What are slots,&nbsp;ACOs, providers, etc?</h2>
+                                <p>Slots and ACO (Auto Checkouts) are the same concept. Essentially, it's providing checkout information to providers, those who are more experienced in botting and sneaker drops, so that they can do the work for you.</p>
+                            </div>
+                            <div>
+                                <h2>2. Why do providers do this?</h2>
+                                <p>Providers run slots for fees (typically P.A.S. - Pay After Success). Of course, certain people have more experience than others, so another reason one may run a slot is to gain experience with their bot(s).</p>
+                            </div>
+                            <div>
+                                <h2>3. How much do slots cost?</h2>
+                                <p>Slots cost the retail of the item plus whatever fee the provider is asking.</p>
+                            </div>
+                            <div>
+                                <h2>4. What happens if I don't pay for my slot?</h2>
+                                <p>Don't do this. The decision is really up to the slot provider, but they may have the order number so it wouldn't be difficult for them to cancel the order.</p>
+                            </div>
+                            <div>
+                                <h2>5. Why should I trust you with my personal details?</h2>
+                                <p>We will never collect information beyond username, email, and password. All of the details for slots should be provided in a slot form created by the provider. Providers will only be allowed to offer slots after they have
+                                    applied and been vetted by EasyACO.</p>
+                            </div>
+                            <p style="color: rgb(147,149,150);">Have more questions? Send&nbsp;th_mas#0001 a message on Discord with anything else you need answered.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-basic">
+        <footer>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="{{ url_for('report') }}">Experience any bugs? Have any suggestions? Click Here!</a></li>
+            </ul>
+            <p class="copyright">EasyACO © 2020</p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

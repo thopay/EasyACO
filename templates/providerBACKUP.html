@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyACO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='jquery.fittext.js') }}"></script>
+    <script src="{{ url_for('static', filename='textFit.js') }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <style>
+        * {
+          font-family:'Montserrat', sans-serif;
+        }
+        .collapsing {
+            -webkit-transition: none;
+            transition: none;
+            display: none;
+        }
+    </style>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="height: 10vh;">
+        <div class="container"><a class="navbar-brand" href="{{ url_for('index') }}" style="font-size: 30px;">EasyACO</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto mobileposition" style="width: 50%;">
+                    <li class="nav-item" role="presentation" style="background-color: #ffffff;"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('providers') }}" style="background-color: #ffffff;">Providers</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('faq') }}" style="background-color: #ffffff;">FAQ</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('success') }}" style="background-color: #ffffff;">Success</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('drops') }}" style="background-color: #ffffff;">Drops</a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('discord') }}" style="background-color: #ffffff;">Log In</a></li>
+                    {% else %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('profile',slug=current_user.slug) }}" style="background-color: #ffffff;">Profile</a></li>
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('logout') }}" style="background-color: #ffffff;">Log Out</a></li>
+                    {% endif %}
+                </ul>
+                    {% if not current_user.is_authenticated %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="btn btn-light action-button" role="button" href="{{ url_for('discord') }}" style="background-color: #2a52d8;">Log In</a></span>
+                    {% else %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="login" href="{{ url_for('profile',slug=current_user.slug) }}">Profile</a><a class="btn btn-light action-button" role="button" href="{{ url_for('logout') }}" style="background-color: #2a52d8;">Log Out</a></span>
+                    {% endif %}
+            </div>
+        </div>
+        <style>
+            @media screen and (max-width: 1024px) {
+                .hideaftersize {
+                    display: none !important;
+                }
+            }
+            @media screen and (max-width: 768px) {
+                .mobileoptions {
+                    display: block !important;
+                }
+                .desktopoptions {
+                    display: none !important;
+                }
+                .mobileposition {
+                    position: absolute !important;
+                }
+                .navbar.navbar-light .navbar-nav {
+                    background-color: white;
+                    margin-top: 0px;
+                    border: solid black;
+                    border-width: 0 5px 5px;
+                }
+            }
+        </style>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="row hideaftersize" style="z-index: 9999;height: 100%;width: 100%;max-width: 100%;max-height: 100px;position:absolute;">
+            <div class="col d-flex d-lg-flex justify-content-center align-self-center justify-content-sm-center align-items-sm-center justify-content-xl-center align-items-xl-center">
+                <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
+                    {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <script>
+        $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 2000); // <-- time in milliseconds
+        });
+    </script>
+    <div class="row no-gutters" style="width: 100%;padding-top: 0px;">
+        <div class="col" style="width: 100%;"><img src="{{ url_for('static', filename='assets/img/Bots_Blurred.png') }}" style="width: 100%;max-height: 80px;height: 80px;"></div>
+    </div>
+    <div class="container">
+        <div class="row" style="width: 100%;margin: 0px;margin-top: 10px;">
+            <div class="col" style="width: 100%;padding: 0px;text-align: center;">
+                <img class="" src="{{ provider.profile_image }}" style="height: 100px;padding: 0px;margin-top: 0px;border-radius:50%;border:groove;border:2px solid #65676D">
+                    <h1 class="changesize" id="providername" style="height: 100px;width: 100%;margin: 0px;margin-top: 0px;margin-bottom: 10px;">
+                        {{ provider.username }}
+                    </h1>
+                    {% if current_user.admin == True and provider.featured != True %}
+                    <a href="{{ url_for('feature',id=provider.id) }}"><button class="btn btn-primary shadow-lg" type="submit" style="background-color: #2a52d8;max-width:150px;text-align: center;border-radius: 20px;">Make Featured</button></a>
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" style="width: 100%;margin: 0px;">
+        <div class="col" style="padding: 0px;">
+            <div class="row" style="width: 100%;margin: 0;">
+                <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                    <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                            <div id="top-providers">
+                                <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Active Slots</h1>
+                                <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                            </div>
+                        </div>
+                        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                            <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                {% for slot in slots %} 
+                                    <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;height: 250px;">
+                                        <a href="{{ url_for('slot',slug=slot.drop.slug, id=slot.id) }}">
+                                        <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 32px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                            <h2 class="text-left changesize" style="font-family: 'Montserrat', sans-serif;">{{ slot.provider.username }}</h2>
+                                            <div class="row">
+                                                <div class="col-xl-5 d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 150px;">
+                                                    <div></div><img src="{{ slot.provider.profile_image }}" style="width: 100%;max-height: auto;border-radius:50%;border:groove;border:2px solid #65676D"></div>
+                                                <div class="col text-center d-xl-flex justify-content-xl-center align-items-xl-center" style="padding: 0px;">
+                                                    {% if slot.price == 0 %}
+                                                    <h2 id="pricerange" class="text-center d-xl-flex justify-content-xl-center align-items-xl-center" style="font-family: 'Montserrat', sans-serif;width:100%;height:100%;margin-right:5px;">${{ slot.minprice }}-{{ slot.maxprice }}</h2>
+                                                    <script>
+                                                        textFit(document.getElementById("pricerange"));
+                                                    </script>
+                                                    {% else %}
+                                                    <h2 id="pricerange" class="text-center d-xl-flex justify-content-xl-center align-items-xl-center" style="font-family: 'Montserrat', sans-serif;width:100%;height:100%;margin-right:5px;">${{ slot.price }}</h2>
+                                                    <script>
+                                                        textFit(document.getElementById("pricerange"));
+                                                    </script>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                                <h3 class="text-right text-secondary adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:20px;padding-bottom:3px;text-align: right;">{{ slot.drop.title }}</h3>
+                                        </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col" style="padding: 0px;">
+            <div class="row" style="width: 100%;margin: 0;">
+                <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                    <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                            <div class="text-center" id="top-providers" style="margin-right: 2%;">
+                                <h1 style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Reviews</h1>
+                                <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;margin-right: 2%;">
+                            </div>
+                        </div>
+                        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                            <div class="row d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                    <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                        <p style="color: rgb(0,0,0);">Example review number one. This one has a lot of text to demonstrate how the box cards changes based on the length.</p>
+                                    </div>
+                                </div>
+                                <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                    <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                        <p style="color: rgb(0,0,0);">Much shorter review</p>
+                                    </div>
+                                </div>
+                                <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                    <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                        <p class="d-xl-flex align-items-xl-center" style="color: rgb(0,0,0);">Example 3</p>
+                                    </div>
+                                </div>
+                                <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                    <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                        <p style="color: rgb(0,0,0);">Example 4</p>
+                                    </div>
+                                </div>
+                                <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                    <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                        <p style="color: rgb(0,0,0);">Example 5</p>
+                                    </div>
+                                </div>
+                                <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                    <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                        <p style="color: rgb(0,0,0);">Example 6</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        textFit(document.getElementsByClassName('adjustsize'));
+    </script>
+    <div class="footer-basic">
+        <footer>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="{{ url_for('report') }}">Experience any bugs? Have any suggestions? Click Here!</a></li>
+            </ul>
+            <p class="copyright">EasyACO © 2020</p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
+    <script src="{{ url_for('static', filename='assets/js/script.min.js') }}"></script>
+</body>
+
+</html>

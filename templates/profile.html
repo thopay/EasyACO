@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyACO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='jquery.fittext.js') }}"></script>
+    <script src="{{ url_for('static', filename='textFit.js') }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <style>
+        * {
+          font-family:'Montserrat', sans-serif;
+        }
+        .collapsing {
+            -webkit-transition: none;
+            transition: none;
+            display: none;
+        }
+    </style>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="height: 10vh;">
+        <div class="container"><a class="navbar-brand" href="{{ url_for('index') }}" style="font-size: 30px;">EasyACO</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto mobileposition" style="width: 50%;">
+                    <li class="nav-item" role="presentation" style="background-color: #ffffff;"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('providers') }}" style="background-color: #ffffff;">Providers</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('faq') }}" style="background-color: #ffffff;">FAQ</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('success') }}" style="background-color: #ffffff;">Success</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('drops') }}" style="background-color: #ffffff;">Drops</a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('discord') }}" style="background-color: #ffffff;">Log In</a></li>
+                    {% else %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('profile',slug=current_user.slug) }}" style="background-color: #ffffff;">Profile</a></li>
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('logout') }}" style="background-color: #ffffff;">Log Out</a></li>
+                    {% endif %}
+                </ul>
+                    {% if not current_user.is_authenticated %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="btn btn-light action-button" role="button" href="{{ url_for('discord') }}" style="background-color: #2a52d8;">Log In</a></span>
+                    {% else %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="login" href="{{ url_for('profile',slug=current_user.slug) }}">Profile</a><a class="btn btn-light action-button" role="button" href="{{ url_for('logout') }}" style="background-color: #2a52d8;">Log Out</a></span>
+                    {% endif %}
+            </div>
+        </div>
+        <style>
+            @media screen and (max-width: 1024px) {
+                .hideaftersize {
+                    display: none !important;
+                }
+            }
+            @media screen and (max-width: 768px) {
+                .mobileoptions {
+                    display: block !important;
+                }
+                .desktopoptions {
+                    display: none !important;
+                }
+                .mobileposition {
+                    position: absolute !important;
+                }
+                .navbar.navbar-light .navbar-nav {
+                    background-color: white;
+                    margin-top: 0px;
+                    border: solid black;
+                    border-width: 0 5px 5px;
+                }
+            }
+        </style>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="row hideaftersize" style="z-index: 9999;height: 100%;width: 100%;max-width: 100%;max-height: 100px;position:absolute;">
+            <div class="col d-flex d-lg-flex justify-content-center align-self-center justify-content-sm-center align-items-sm-center justify-content-xl-center align-items-xl-center">
+                <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
+                    {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <script>
+        $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 2000);
+        });
+    </script>
+    <div class="row no-gutters" style="width: 100%;padding-top: 0px;">
+        <div class="col" style="width: 100%;"><img src="{{ url_for('static', filename='assets/img/Bots_Blurred.png') }}" style="width: 100%;max-height: 80px;height: 80px;"></div>
+    </div>
+    <div class="container" style="margin-bottom:15px;">
+        <div class="row" style="width: 100%;margin: 0px;margin-top: 10px;">
+            <div class="col" style="width: 100%;padding: 0px;">
+                <h1 class="text-center d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center align-items-center justify-content-sm-center align-items-sm-center justify-content-md-center align-items-md-center justify-content-lg-center align-items-lg-center justify-content-xl-center align-items-xl-center"
+                    id="providername" style="height: 100px;width: 100%;margin: 0px;margin-top: 0px;margin-bottom: 10px;"><img class="d-inline" src="{{ user.profile_image }}" style="padding: 0px;margin-top: 0px;height: 100px;border-radius:50%;border:groove;border:2px solid #65676D"><br>&nbsp;{{ user.username }}<br><br></h1>
+            </div>
+        </div>
+        {% if current_user.admin == True and user.featured != True and user.provider == True %}
+        <div style="text-align: center;">
+            <a href="{{ url_for('feature',id=user.id) }}"><button class="btn btn-primary shadow-lg" type="submit" style="background-color: #2a52d8;max-width:150px;text-align: center;border-radius: 20px;">Make Featured</button></a>
+        </div>
+        {% endif %}
+    </div>
+    {% if current_user == user and current_user.provider == True %}
+    <div class="row" style="width: 100%;margin: 0px;">
+        <div class="col" style="padding: 0px;width: 100%;max-width: 100%;">
+            <div style="width: 100%;">
+                <ul class="nav nav-tabs d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;">
+                    <li class="nav-item"><a class="nav-link active text-center" role="tab" data-toggle="tab" href="#slots" style="width: 200px;">Slots</a></li>
+                    <li class="nav-item"><a class="nav-link text-center" role="tab" data-toggle="tab" href="#reviews" style="width: 200px;">Reviews</a></li>
+                    <li class="nav-item"><a class="nav-link text-center" role="tab" data-toggle="tab" href="#settings" style="width: 200px;" >Settings</a></li>
+                    <script>
+                        $(function() { 
+                            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                                localStorage.setItem('focustab', $(e.target).attr('href'));
+                            });
+
+                            var focustab = localStorage.getItem('focustab');
+                            if (focustab) {
+                                $('[href="' + focustab + '"]').tab('show');
+                            }
+                        });
+                    </script>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" role="tabpanel" id="slots">
+                        <div class="row" style="width: 100%;margin: 0px;">
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Active Slots</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    {% for slot in slots %} 
+                                                        <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;height: 250px;">
+                                                            <a href="{{ url_for('slot',slug=slot.drop.slug, id=slot.id) }}">
+                                                            <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 32px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                                                <h2 class="text-left changesize" style="font-family: 'Montserrat', sans-serif;">{{ slot.provider.username }}</h2>
+                                                                <div class="row">
+                                                                    <div class="col-xl-5 d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 150px;">
+                                                                        <div></div><img src="{{ slot.provider.profile_image }}" style="width: 100%;max-height: auto;border-radius:50%;border:groove;border:2px solid #65676D"></div>
+                                                                    <div class="col text-center d-xl-flex justify-content-xl-center align-items-xl-center" style="padding: 0px;">
+                                                                        {% if slot.price == 0 %}
+                                                                        <h2 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:100%;margin-right:5px;">${{ slot.minprice }}-{{ slot.maxprice }}</h2>
+                                                                        {% else %}
+                                                                        <h2 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:100%;margin-right:5px;">${{ slot.price }}</h2>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                    <h3 class="text-right text-secondary adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:20px;padding-bottom:3px;text-align: right;">{{ slot.drop.title }}</h3>
+                                                            </div>
+                                                            </a>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Pending Slots</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    {% for slot in slots %} 
+                                                        {% for pendinguser in slot.pending_users %}
+                                                        <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;margin-left:10px;margin-right:10px;">
+                                                            <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 16px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                                                <div class="row">
+                                                                    <div class="" style="width: 100%;text-align:center;">
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;">User: {{ pendinguser.username }}</h2>
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;">Drop: {{ slot.drop.title }}</h2>
+                                                                    </div>
+                                                                </div>
+                                                                <h3 class="text-secondary" style="font-family: 'Montserrat', sans-serif;width:100%;font-size: 13px;padding-bottom:10px;">Did you receive slot information from this user for and are you ready to run this slot?</h3>
+                                                                <a href="{{ url_for('confirmslot', slug=slot.drop.slug, id=slot.id, user_id=pendinguser.id) }}"><button class="btn btn-success shadow-lg" type="submit" style="font-size: 15px;width:150px;text-align: center;border-radius: 20px;">Yes</button></a>
+                                                                <a href="{{ url_for('cancelslot', slug=slot.drop.slug, id=slot.id, user_id=pendinguser.id) }}"><button class="btn btn-danger shadow-lg" type="submit" style="font-size: 15px;width:150px;text-align: center;border-radius: 20px;">No</button></a>
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Confirmed Slots</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    {% for slot in slots %} 
+                                                        <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;margin-left:10px;margin-right:10px;">
+                                                            <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 16px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                                                <div class="row">
+                                                                    <div class="text-align:center;" style="max-width: 100%;">
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;width:330px;height:50%;">Drop: {{ slot.drop.title }}</h2>
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;width:330px;height:50%;">Number of Slots: {{ slot.participants }}</h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="reviews">
+                        <div class="row" style="margin: 0px;">
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="text-center" id="top-providers" style="margin-right: 2%;">
+                                                    <h1 style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Reviews</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;margin-right: 2%;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example review number one. This one has a lot of text to demonstrate how the box cards changes based on the length.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Much shorter review</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p class="d-xl-flex align-items-xl-center" style="color: rgb(0,0,0);">Example 3</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example 4</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example 5</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example 6</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="settings">
+                        <div class="row" style="margin: 0px;">
+                            <div class="col" style="padding: 0px;width: 100%;">
+                                <div class="row" style="width: 100%;margin: 0px;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;width: 100%;">
+                                        <div id="providers" style="filter: saturate(100%);width: 100%;">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Settings</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="row" style="width: 100%;margin: 0;">
+                                                <div class="col d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                    <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                                        <div style="max-width: 400px;width: 100%;">
+                                                            <div class="row d-xl-flex" style="max-width: 400px;margin: 0px;">
+                                                                <div class="col text-secondary d-xl-flex justify-content-xl-center align-items-xl-center" id="profilebox" style="border:groove;border-color:black;margin: 0;margin-top: 7px;padding: 0px;padding-top: 38px;padding-bottom: 25px;width: 500px;">
+                                                                    <div class="text-center" style="height: 100%;width: 100%;">
+                                                                        <h1 class="changesize" style="color: rgb(0,0,0);">{{ current_user.current_username }}</h1>
+                                                                        {% if current_user.status != "" and current_user.provider == False %}
+                                                                        <h4 class="text-center changesize" style="color: rgb(0,0,0);margin-left: 0px;">Provider Status: Applied</h4>
+                                                                        {% elif current_user.status != "" and current_user.provider == True %}
+                                                                        <h4 class="text-center changesize" style="color: rgb(0,0,0);margin-left: 0px;">Provider Status: Accepted</h4>
+                                                                        <form method="post" style="width: 100%;margin-top:15px;">
+                                                                            {% if error == 1 %}
+                                                                            <p class="text-danger" style="margin: 0;">One of the showcases was too long. Keep it under 32 characters.</p>
+                                                                            {% endif %}
+                                                                            <label>Showcase Spots</label>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex1" placeholder="Showcase 1" {% if current_user.flex1 != " " %}  value="{{ current_user.flex1 }}" {% endif %}>
+                                                                            </div>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex2" placeholder="Showcase 2" {% if current_user.flex2 != " " %}  value="{{ current_user.flex2 }}" {% endif %}>
+                                                                            </div>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex3" placeholder="Showcase 3" {% if current_user.flex3 != " " %}  value="{{ current_user.flex3 }}" {% endif %}>
+                                                                            </div>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex4" placeholder="Showcase 4" {% if current_user.flex4 != " " %}  value="{{ current_user.flex4 }}" {% endif %}>
+                                                                            </div>
+                                                                            <br>
+                                                                            <label>Card Color (HEX)</label>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" title="HEX Color - Ex: #f5429b" type="text" name="cardcolor" placeholder="#000000" pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" value="{{ current_user.color }}" onChange="setTextColor();">
+                                                                            </div>
+                                                                            <input class="form-control" id="textColor" type="hidden" name="textcolor" value="">
+                                                                            <div class="form-group"><button class="btn btn-primary btn-block shadow-lg" type="submit" style="background-color: #2a52d8;">Save</button></div></form>
+                                                                        {% else %}
+                                                                        <div style="margin-top:50px;">
+                                                                            <p>Want to be a provider?</p>
+                                                                            <a class="btn btn-primary btn-block shadow-lg" role="button" href="{{ url_for('apply') }}" style="background-color: #2a52d8;">Apply</a>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <script>
+                                                function setTextColor(){
+                                                    hexColor = document.getElementById("cardColor").value;
+                                                    console.log(hexColor)
+                                                    textColor = getContrastColor(hexColor);
+                                                    console.log(textColor)
+                                                    document.getElementById("textColor").value = textColor;
+                                                };
+                                        
+                                                function getContrastColor($hexColor) 
+                                                {
+                                                        $R1 = hexdec(substr($hexColor, 1, 2));
+                                                        $G1 = hexdec(substr($hexColor, 3, 2));
+                                                        $B1 = hexdec(substr($hexColor, 5, 2));
+                                                        $blackColor = "#000000";
+                                                        $R2BlackColor = hexdec(substr($blackColor, 1, 2));
+                                                        $G2BlackColor = hexdec(substr($blackColor, 3, 2));
+                                                        $B2BlackColor = hexdec(substr($blackColor, 5, 2));
+                                                        $L1 = 0.2126 * pow($R1 / 255, 2.2) +
+                                                            0.7152 * pow($G1 / 255, 2.2) +
+                                                            0.0722 * pow($B1 / 255, 2.2);
+                                        
+                                                        $L2 = 0.2126 * pow($R2BlackColor / 255, 2.2) +
+                                                            0.7152 * pow($G2BlackColor / 255, 2.2) +
+                                                            0.0722 * pow($B2BlackColor / 255, 2.2);
+                                        
+                                                        $contrastRatio = 0;
+                                                        if ($L1 > $L2) {
+                                                            $contrastRatio = (int)(($L1 + 0.05) / ($L2 + 0.05));
+                                                        } else {
+                                                            $contrastRatio = (int)(($L2 + 0.05) / ($L1 + 0.05));
+                                                        }
+                                                        if ($contrastRatio > 5) {
+                                                            return '#000000';
+                                                        } else { 
+                                                            return '#FFFFFF';
+                                                        }
+                                                };
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif current_user == user and current_user.provider == False %}
+    <div class="row" style="width: 100%;margin: 0px;">
+        <div class="col" style="padding: 0px;width: 100%;max-width: 100%;">
+            <div style="width: 100%;">
+                <ul class="nav nav-tabs d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;">
+                    <li class="nav-item"><a class="nav-link active text-center" role="tab" data-toggle="tab" href="#slots" style="width: 200px;" >Slots</a></li>
+                    <li class="nav-item"><a class="nav-link text-center" role="tab" data-toggle="tab" href="#settings" style="width: 200px;" >Settings</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" role="tabpanel" id="slots">
+                        <div class="row" style="width: 100%;margin: 0px;">
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Pending Slots</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    {% for slot in current_user.pendingSlots %} 
+                                                        <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;margin-left:10px;margin-right:10px;">
+                                                            <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 16px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                                                <div class="row">
+                                                                    <div class="" style="max-width: 100%;text-align:center; ">
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;width:330px;height:50%;">Drop: {{ slot.drop.title }}</h2>
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;width:330px;height:50%;">Provider: {{ slot.provider.username }}</h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Confirmed Slots</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    {% for slot in current_user.confirmedSlots %} 
+                                                        <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;margin-left:10px;margin-right:10px;">
+                                                            <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 16px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                                                <div class="row">
+                                                                    <div class="" style="max-width: 100%;text-align:center;">
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;width:330px;height:35px;">Drop: {{ slot.drop.title }}</h2>
+                                                                        <h2 class="adjustsize" style="font-family: 'Montserrat', sans-serif;width:330px;height:35px;">Provider: {{ slot.provider.username }}</h2>
+                                                                    </div>
+                                                                </div>
+                                                                <h3 class="text-secondary" style="font-family: 'Montserrat', sans-serif;width:100%;height:20px;padding-bottom:5px;font-size: 13px;">Was your slot successful?</h3>
+                                                                <a href="{{ url_for('successslot',slug=slot.drop.slug,id=slot.id,user_id=current_user.id) }}"><button class="btn btn-success shadow-lg" type="submit" style="font-size: 15px;width:150px;text-align: center;border-radius: 20px;">Yes</button></a>
+                                                                <a href="{{ url_for('failslot',slug=slot.drop.slug,id=slot.id,user_id=current_user.id) }}"><button class="btn btn-danger shadow-lg" type="submit" style="font-size: 15px;width:150px;text-align: center;border-radius: 20px;">No</button></a>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="settings">
+                        <div class="row" style="margin: 0px;">
+                            <div class="col" style="padding: 0px;width: 100%;">
+                                <div class="row" style="width: 100%;margin: 0px;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;width: 100%;">
+                                        <div id="providers" style="filter: saturate(100%);width: 100%;">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Settings</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="row" style="width: 100%;margin: 0;">
+                                                <div class="col d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                    <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                                        <div style="max-width: 400px;width: 100%;">
+                                                            <div class="row d-xl-flex" style="max-width: 400px;margin: 0px;">
+                                                                <div class="col text-secondary d-xl-flex justify-content-xl-center align-items-xl-center" id="profilebox" style="border:groove;border-color:black;margin: 0;margin-top: 7px;padding: 0px;width: 500px;">
+                                                                    <div class="text-center" style="height: 100%;width: 100%;">
+                                                                        <h1 class="changesize" style="color: rgb(0,0,0);">{{ current_user.current_username }}</h1>
+                                                                        {% if current_user.status != "" and current_user.provider == False %}
+                                                                        <h4 class="text-center changesize" style="color: rgb(0,0,0);margin-left: 0px;">Provider Status: Applied</h4>
+                                                                        {% elif current_user.status != "" and current_user.provider == True %}
+                                                                        <h4 class="text-center changesize" style="color: rgb(0,0,0);margin-left: 0px;">Provider Status: Accepted</h4>
+                                                                        <form method="post" style="width: 100%;margin-top:15px;">
+                                                                            {% if error == 1 %}
+                                                                            <p class="text-danger" style="margin: 0;">One of the showcases was too long. Keep it under 32 characters.</p>
+                                                                            {% endif %}
+                                                                            <label>Showcase Spots</label>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex1" placeholder="Showcase 1" {% if current_user.flex1 != " " %}  value="{{ current_user.flex1 }}" {% endif %}>
+                                                                            </div>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex2" placeholder="Showcase 2" {% if current_user.flex2 != " " %}  value="{{ current_user.flex2 }}" {% endif %}>
+                                                                            </div>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex3" placeholder="Showcase 3" {% if current_user.flex3 != " " %}  value="{{ current_user.flex3 }}" {% endif %}>
+                                                                            </div>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" type="text" name="flex4" placeholder="Showcase 4" {% if current_user.flex4 != " " %}  value="{{ current_user.flex4 }}" {% endif %}>
+                                                                            </div>
+                                                                            <br>
+                                                                            <label>Card Color (HEX)</label>
+                                                                            <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                                                                <input class="form-control" title="HEX Color - Ex: #f5429b" type="text" name="cardcolor" placeholder="#000000" pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" value="{{ current_user.color }}" onChange="setTextColor();">
+                                                                            </div>
+                                                                            <input class="form-control" id="textColor" type="hidden" name="textcolor" value="">
+                                                                            <div class="form-group"><button class="btn btn-primary btn-block shadow-lg" type="submit" style="background-color: #2a52d8;">Save</button></div></form>
+                                                                        {% else %}
+                                                                        <div style="margin-top:15px;">
+                                                                            <p>Want to be a provider?</p>
+                                                                            <a class="btn btn-primary btn-block shadow-lg" role="button" href="{{ url_for('apply') }}" style="background-color: #2a52d8;margin-bottom:15px;">Apply</a>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <script>
+                                                function setTextColor(){
+                                                    hexColor = document.getElementById("cardColor").value;
+                                                    console.log(hexColor)
+                                                    textColor = getContrastColor(hexColor);
+                                                    console.log(textColor)
+                                                    document.getElementById("textColor").value = textColor;
+                                                };
+                                        
+                                                function getContrastColor($hexColor) 
+                                                {
+                                                        $R1 = hexdec(substr($hexColor, 1, 2));
+                                                        $G1 = hexdec(substr($hexColor, 3, 2));
+                                                        $B1 = hexdec(substr($hexColor, 5, 2));
+                                                        $blackColor = "#000000";
+                                                        $R2BlackColor = hexdec(substr($blackColor, 1, 2));
+                                                        $G2BlackColor = hexdec(substr($blackColor, 3, 2));
+                                                        $B2BlackColor = hexdec(substr($blackColor, 5, 2));
+                                                        $L1 = 0.2126 * pow($R1 / 255, 2.2) +
+                                                            0.7152 * pow($G1 / 255, 2.2) +
+                                                            0.0722 * pow($B1 / 255, 2.2);
+                                        
+                                                        $L2 = 0.2126 * pow($R2BlackColor / 255, 2.2) +
+                                                            0.7152 * pow($G2BlackColor / 255, 2.2) +
+                                                            0.0722 * pow($B2BlackColor / 255, 2.2);
+                                        
+                                                        $contrastRatio = 0;
+                                                        if ($L1 > $L2) {
+                                                            $contrastRatio = (int)(($L1 + 0.05) / ($L2 + 0.05));
+                                                        } else {
+                                                            $contrastRatio = (int)(($L2 + 0.05) / ($L1 + 0.05));
+                                                        }
+                                                        if ($contrastRatio > 5) {
+                                                            return '#000000';
+                                                        } else { 
+                                                            return '#FFFFFF';
+                                                        }
+                                                };
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row" style="width: 100%;margin: 0px;">
+        <div class="col" style="padding: 0px;width: 100%;max-width: 100%;">
+            <div style="width: 100%;">
+                <ul class="nav nav-tabs d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;">
+                    <li class="nav-item"><a class="nav-link active text-center" role="tab" data-toggle="tab" href="#slots" style="width: 200px;">Slots</a></li>
+                    <li class="nav-item"><a class="nav-link text-center" role="tab" data-toggle="tab" href="#reviews" style="width: 200px;">Reviews</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" role="tabpanel" id="slots">
+                        <div class="row" style="width: 100%;margin: 0px;">
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div id="top-providers">
+                                                    <h1 class="text-center d-xl-flex justify-content-xl-center" style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Active Slots</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-xl-flex justify-content-md-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    {% for slot in slots %} 
+                                                        <div class="col d-flex d-sm-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-lg-center align-items-lg-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;height: 250px;">
+                                                            <a href="{{ url_for('slot',slug=slot.drop.slug, id=slot.id) }}">
+                                                            <div class="jumbotron shadow-lg float-left" style="width: auto;min-width: 330px;max-width: 380px;padding: 13px;margin-top: 32px;background-color: {{ slot.provider.color }};color:{{ slot.provider.textcolor }}">
+                                                                <h2 class="text-left changesize" style="font-family: 'Montserrat', sans-serif;">{{ slot.provider.username }}</h2>
+                                                                <div class="row">
+                                                                    <div class="col-xl-5 d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 150px;">
+                                                                        <div></div><img src="{{ slot.provider.profile_image }}" style="width: 100%;max-height: auto;border-radius:50%;border:groove;border:2px solid #65676D"></div>
+                                                                    <div class="col text-center d-xl-flex justify-content-xl-center align-items-xl-center" style="padding: 0px;">
+                                                                        {% if slot.price == 0 %}
+                                                                        <h2 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:100%;margin-right:5px;">${{ slot.minprice }}-{{ slot.maxprice }}</h2>
+                                                                        {% else %}
+                                                                        <h2 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:100%;margin-right:5px;">${{ slot.price }}</h2>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                    <h3 class="text-right text-secondary adjustsize" style="font-family: 'Montserrat', sans-serif;width:100%;height:20px;padding-bottom:3px;text-align: right;">{{ slot.drop.title }}</h3>
+                                                            </div>
+                                                            </a>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="reviews">
+                        <div class="row" style="margin: 0px;">
+                            <div class="col" style="padding: 0px;">
+                                <div class="row" style="width: 100%;margin: 0;">
+                                    <div class="col d-xl-flex justify-content-xl-center" style="padding: 0px;">
+                                        <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="text-center" id="top-providers" style="margin-right: 2%;">
+                                                    <h1 style="padding-left: 2%;padding-top: 2%;font-size: 5vh;">Reviews</h1>
+                                                    <hr class="float-left" style="color: rgb(0,0,0);background-color: #000000;width: 40vh;margin-top: 0px;margin-right: 2%;">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                                                <div class="row d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center" style="width: 100%;max-width: 100%;margin: 0px;">
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example review number one. This one has a lot of text to demonstrate how the box cards changes based on the length.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Much shorter review</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p class="d-xl-flex align-items-xl-center" style="color: rgb(0,0,0);">Example 3</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example 4</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example 5</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col d-flex d-sm-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-xl-center align-items-xl-center" data-aos="fade-up" data-aos-duration="600" style="padding: 0;">
+                                                        <div class="jumbotron shadow-lg float-left d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 330px;min-width: 330px;max-width: 330px;padding: 13px;margin-top: 32px;background-color: rgb(255,255,255);">
+                                                            <p style="color: rgb(0,0,0);">Example 6</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <style>
+        .nav.nav-tabs.d-flex.d-sm-flex.d-md-flex.d-lg-flex.d-xl-flex.justify-content-center.justify-content-sm-center.justify-content-md-center.justify-content-lg-center.justify-content-xl-center {
+        border-bottom: 1px solid black;
+        }
+        .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+        border: 1px solid;
+        border-radius: 0px;
+        }
+    </style>
+        <script>
+            textFit(document.getElementsByClassName('adjustsize'));
+        </script>
+    <div class="footer-basic">
+        <footer>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="{{ url_for('report') }}">Experience any bugs? Have any suggestions? Click Here!</a></li>
+            </ul>
+            <p class="copyright">EasyACO © 2020</p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
+    <script src="{{ url_for('static', filename='assets/js/script.min.js') }}"></script>
+</body>
+
+</html>

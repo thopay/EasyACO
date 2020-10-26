@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyACO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.min.css') }}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='jquery.fittext.js') }}"></script>
+    <script src="{{ url_for('static', filename='textFit.js') }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <style>
+        * {
+          font-family:'Montserrat', sans-serif;
+        }
+        .collapsing {
+            -webkit-transition: none;
+            transition: none;
+            display: none;
+        }
+    </style>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="height: 10vh;">
+        <div class="container"><a class="navbar-brand" href="{{ url_for('index') }}" style="font-size: 30px;">EasyACO</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto mobileposition" style="width: 50%;">
+                    <li class="nav-item" role="presentation" style="background-color: #ffffff;"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('providers') }}" style="background-color: #ffffff;">Providers</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('faq') }}" style="background-color: #ffffff;">FAQ</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('success') }}" style="background-color: #ffffff;">Success</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('drops') }}" style="background-color: #ffffff;">Drops</a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('discord') }}" style="background-color: #ffffff;">Log In</a></li>
+                    {% else %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('profile',slug=current_user.slug) }}" style="background-color: #ffffff;">Profile</a></li>
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('logout') }}" style="background-color: #ffffff;">Log Out</a></li>
+                    {% endif %}
+                </ul>
+                    {% if not current_user.is_authenticated %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="btn btn-light action-button" role="button" href="{{ url_for('discord') }}" style="background-color: #2a52d8;">Log In</a></span>
+                    {% else %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="login" href="{{ url_for('profile',slug=current_user.slug) }}">Profile</a><a class="btn btn-light action-button" role="button" href="{{ url_for('logout') }}" style="background-color: #2a52d8;">Log Out</a></span>
+                    {% endif %}
+            </div>
+        </div>
+        <style>
+            @media screen and (max-width: 1024px) {
+                .hideaftersize {
+                    display: none !important;
+                }
+            }
+            @media screen and (max-width: 768px) {
+                .mobileoptions {
+                    display: block !important;
+                }
+                .desktopoptions {
+                    display: none !important;
+                }
+                .mobileposition {
+                    position: absolute !important;
+                }
+                .navbar.navbar-light .navbar-nav {
+                    background-color: white;
+                    margin-top: 0px;
+                    border: solid black;
+                    border-width: 0 5px 5px;
+                }
+            }
+        </style>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="row hideaftersize" style="z-index: 9999;height: 100%;width: 100%;max-width: 100%;max-height: 100px;position:absolute;">
+            <div class="col d-flex d-lg-flex justify-content-center align-self-center justify-content-sm-center align-items-sm-center justify-content-xl-center align-items-xl-center">
+                <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
+                    {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <script>
+        $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 2000); // <-- time in milliseconds
+        });
+    </script>
+    <div class="row no-gutters" style="width: 100%;padding-top: 0px;">
+        <div class="col" style="width: 100%;"><img src="{{ url_for('static', filename='assets/img/Bots_Blurred.png') }}" style="width: 100%;max-height: 80px;height: 80px;"></div>
+    </div>
+    <div class="row" style="width: 100%;margin: 0;">
+        <div class="col d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+            <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                <div id="top-providers">
+                    <h1 class="adjustsize" style="padding-left: 2%;padding-top: 2%;width: 246px;width:400px;height:100%;">Slot Information</h1>
+                </div>
+                <div style="max-width: 400px;width: 100%;">
+                    <div class="row d-xl-flex" style="max-width: 400px;margin: 0px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-end" id="loginbox" style="margin-top: 7px;padding-top: 38px;padding-bottom: 25px;width: 500px;">
+                            <div style="width: 100%;height: 100%;">
+                                <div style="width:100%;">
+                                    <h1 style="font-weight: normal;width:300px;font-size:22px;">Item(s): {{ slot.drop.title }}</h1>
+                                </div>
+                                <div style="width:100%;">
+                                    <h1 style="font-weight: normal;width:300px;font-size:22px;">Provider: <a href="{{ url_for('profile',slug=slot.provider.slug) }}">{{ slot.provider.username }}</a></h1>
+                                </div>
+                                {% if slot.price == 0 %}
+                                <div style="width:100%;">
+                                    <h1 style="font-weight: normal;width:300px;font-size:22px;">Price: ${{ slot.minprice }}-{{ slot.maxprice }}</h1>
+                                </div>
+                                {% else %}
+                                <div style="width:100%;">
+                                    <h1 style="font-weight: normal;width:300px;font-size:22px;">Price: ${{ slot.price }}</h1>
+                                </div>
+                                {% endif %}
+                                <script>
+                                    textFit(document.getElementsByClassName('adjustsize'));
+                                </script>
+                                <div style="width:100%;">
+                                    <h1 style="font-weight: normal;width:300px;font-size:22px;">Form: 
+                                        {% if current_user != slot.provider %}
+                                            {% if slot.closed == False %}
+                                            {% if current_user in slot.pending_users or current_user in slot.confirmed_users %}
+                                            You're either already in this slot or pending confirmation.
+                                            {% else %}
+                                            <a href="{{ url_for('join', slug=slot.drop.slug, id=slot.id) }}"><button class="btn btn-success shadow-lg" type="submit" style="font-size: 15px;max-width:150px;text-align: center;border-radius: 20px;">Join Slot</button></a>
+                                            {% endif %}
+                                            {% else %}
+                                            <a>Closed</a>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if slot.closed == False %}
+                                            <a href="{{ slot.form_link }}">Link</a>
+                                            {% else %}
+                                            <a href="{{ slot.form_link }}">Link</a> (Closed to Public)
+                                            {% endif %}
+                                        {% endif %}
+                                    </h1>
+                                </div>
+                                <div style="padding-bottom: 15px;">
+                                    <h1 style="font-size: 22px;font-weight: normal;">Description:</h1>
+                                    <p style="max-width: 100%;max-height: 100%;">{{ slot.desc|safe }}</p>
+                                </div>
+                                {% if current_user == slot.provider %}
+                                <a href="{{ url_for('slotedit',slug=slot.drop.slug, id=slot.id) }}"><button class="btn btn-primary btn-block shadow-lg" type="submit" style="background-color: #2a52d8;">Edit Post</button></a>
+                                <br>
+                                <a href="{{ url_for('slotdelete',slug=slot.drop.slug, id=slot.id) }}"><button class="btn btn-danger btn-block shadow-lg" type="submit" style="border-radius: 20px;">Delete Post</button></a>
+                                {% if slot.closed == False %}
+                                <br>
+                                <a href="{{ url_for('slotclose',slug=slot.drop.slug, id=slot.id) }}"><button class="btn btn-success btn-block shadow-lg" type="submit" style="border-radius: 20px;">Close Post</button></a>
+                                {% else %}
+                                <br>
+                                <a href="{{ url_for('slotopen',slug=slot.drop.slug, id=slot.id) }}"><button class="btn btn-warning btn-block shadow-lg" type="submit" style="border-radius: 20px;">Open Post</button></a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-basic">
+        <footer>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="{{ url_for('report') }}">Experience any bugs? Have any suggestions? Click Here!</a></li>
+            </ul>
+            <p class="copyright">EasyACO © 2020</p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

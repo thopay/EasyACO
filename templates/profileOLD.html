@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyACO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.min.css') }}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='jquery.fittext.js') }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <style>
+        * {
+          font-family:'Montserrat', sans-serif;
+        }
+        .collapsing {
+            -webkit-transition: none;
+            transition: none;
+            display: none;
+        }
+    </style>
+    <script>
+        jQuery("#changesize").fitText();
+    </script>
+     <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="height: 10vh;">
+        <div class="container"><a class="navbar-brand" href="{{ url_for('index') }}" style="font-size: 30px;">EasyACO</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto mobileposition" style="width: 50%;">
+                    <li class="nav-item" role="presentation" style="background-color: #ffffff;"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('providers') }}" style="background-color: #ffffff;">Providers</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('faq') }}" style="background-color: #ffffff;">FAQ</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('success') }}" style="background-color: #ffffff;">Success</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{{ url_for('drops') }}" style="background-color: #ffffff;">Drops</a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('discord') }}" style="background-color: #ffffff;">Log In</a></li>
+                    {% else %}
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link active" href="{{ url_for('profile') }}" style="background-color: #ffffff;">Profile</a></li>
+                    <li class="nav-item mobileoptions" role="presentation" style="display:none;"><a class="nav-link" href="{{ url_for('logout') }}" style="background-color: #ffffff;">Log Out</a></li>
+                    {% endif %}
+                </ul>
+                    {% if not current_user.is_authenticated %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="btn btn-light action-button" role="button" href="{{ url_for('discord') }}" style="background-color: #2a52d8;">Log In</a></span>
+                    {% else %}
+                    <span class="text-right navbar-text actions desktopoptions" style="width: 50%;background-color: #ffffff;position:relative;"><a class="login" href="{{ url_for('profile') }}">Profile</a><a class="btn btn-light action-button" role="button" href="{{ url_for('logout') }}" style="background-color: #2a52d8;">Log Out</a></span>
+                    {% endif %}
+            </div>
+        </div>
+        <style>
+            @media screen and (max-width: 1024px) {
+                .hideaftersize {
+                    display: none !important;
+                }
+            }
+            @media screen and (max-width: 768px) {
+                .mobileoptions {
+                    display: block !important;
+                }
+                .desktopoptions {
+                    display: none !important;
+                }
+                .mobileposition {
+                    position: absolute !important;
+                }
+                .navbar.navbar-light .navbar-nav {
+                    background-color: white;
+                    margin-top: 0px;
+                    border: solid black;
+                    border-width: 0 5px 5px;
+                }
+            }
+        </style>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="row hideaftersize" style="z-index: 9999;height: 100%;width: 100%;max-width: 100%;max-height: 100px;position:absolute;">
+            <div class="col d-flex d-lg-flex justify-content-center align-self-center justify-content-sm-center align-items-sm-center justify-content-xl-center align-items-xl-center">
+                <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
+                    {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <script>
+        $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 2000); // <-- time in milliseconds
+        });
+    </script>
+    <div class="row no-gutters" style="width: 100%;padding-top: 0px;">
+        <div class="col" style="width: 100%;"><img src="{{ url_for('static', filename='assets/img/Bots_Blurred.png') }}" style="width: 100%;max-height: 80px;height: 80px;"></div>
+    </div>
+    <div class="row" style="width: 100%;margin: 0;">
+        <div class="col d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+            <div id="providers" style="max-width: 1225px;filter: saturate(100%);">
+                <div id="top-providers">
+                    {% if error %}
+                    <script>
+                        setTimeout(function(){
+                            document.getElementById('error').className = 'errorbye';
+                        }, 5000);
+                    </script>
+                    <style>
+                        #error {
+                            opacity:1;
+                            transition:opacity 500ms;
+                        }
+                        #error.errorbye {
+                            opacity:0;
+                        }
+                    </style>
+                    <div id="error" class="alert alert-danger" style="margin-top:20px;" role="alert">
+                        You've already applied. Please wait for your application to be reviewed.
+                      </div>
+                      {% endif %}
+                    <h1 style="padding-left: 2%;padding-top: 2%;font-size: 5vh;width: 200px;">Profile</h1>
+                </div>
+                <div style="max-width: 400px;width: 100%;">
+                    <div class="row d-xl-flex" style="max-width: 400px;margin: 0px;">
+                        <div class="col text-secondary d-xl-flex justify-content-xl-center align-items-xl-center" id="profilebox" style="border:groove;border-color:black;margin: 0;margin-top: 7px;padding: 0px;padding-top: 38px;padding-bottom: 25px;width: 500px;">
+                            <div class="text-center" style="height: 100%;width: 100%;"><img class="rounded-circle" id="pfp" src="{{ user.profile_image }}" style="width: 100px;height: 100px;">
+                                <h1 class="changesize" style="color: rgb(0,0,0);">{{ user.username }}</h1>
+                                {% if user.status != "" and user.provider == False %}
+                                <h4 class="text-center changesize" style="color: rgb(0,0,0);margin-left: 0px;">Provider Status: Applied</h4>
+                                {% elif user.status != "" and user.provider == True %}
+                                <h4 class="text-center changesize" style="color: rgb(0,0,0);margin-left: 0px;">Provider Status: Accepted</h4>
+                                <form method="post" style="width: 100%;margin-top:15px;">
+                                    {% if error == 1 %}
+                                    <p class="text-danger" style="margin: 0;">One of the showcases was too long. Keep it under 32 characters.</p>
+                                    {% endif %}
+                                    <label>Showcase Spots</label>
+                                    <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                        <input class="form-control" type="text" name="flex1" placeholder="Showcase 1" {% if user.flex1 != " " %}  value="{{ user.flex1 }}" {% endif %}>
+                                    </div>
+                                    <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                        <input class="form-control" type="text" name="flex2" placeholder="Showcase 2" {% if user.flex2 != " " %}  value="{{ user.flex2 }}" {% endif %}>
+                                    </div>
+                                    <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                        <input class="form-control" type="text" name="flex3" placeholder="Showcase 3" {% if user.flex3 != " " %}  value="{{ user.flex3 }}" {% endif %}>
+                                    </div>
+                                    <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                        <input class="form-control" type="text" name="flex4" placeholder="Showcase 4" {% if user.flex4 != " " %}  value="{{ user.flex4 }}" {% endif %}>
+                                    </div>
+                                    <br>
+                                    <label>Card Color (HEX)</label>
+                                    <div class="form-group d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex align-items-center align-items-sm-center align-items-md-center align-items-lg-center align-items-xl-center" style="height: 3vh;margin-right:10px;margin-left: 10px;">
+                                        <input class="form-control" title="HEX Color - Ex: #f5429b" type="text" name="cardcolor" placeholder="#000000" pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" value="{{ user.color }}" onChange="setTextColor();">
+                                    </div>
+                                    <input class="form-control" id="textColor" type="hidden" name="textcolor" value="">
+                                    <div class="form-group"><button class="btn btn-primary btn-block shadow-lg" type="submit" style="background-color: #2a52d8;">Save</button></div></form>
+                                {% else %}
+                                <div style="margin-top:50px;">
+                                    <p>Want to be a provider?</p>
+                                    <a class="btn btn-primary btn-block shadow-lg" role="button" href="{{ url_for('apply') }}" style="background-color: #2a52d8;">Apply</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function setTextColor(){
+            hexColor = document.getElementById("cardColor").value;
+            console.log(hexColor)
+            textColor = getContrastColor(hexColor);
+            console.log(textColor)
+            document.getElementById("textColor").value = textColor;
+        };
+
+        function getContrastColor($hexColor) 
+        {
+                $R1 = hexdec(substr($hexColor, 1, 2));
+                $G1 = hexdec(substr($hexColor, 3, 2));
+                $B1 = hexdec(substr($hexColor, 5, 2));
+                $blackColor = "#000000";
+                $R2BlackColor = hexdec(substr($blackColor, 1, 2));
+                $G2BlackColor = hexdec(substr($blackColor, 3, 2));
+                $B2BlackColor = hexdec(substr($blackColor, 5, 2));
+                $L1 = 0.2126 * pow($R1 / 255, 2.2) +
+                    0.7152 * pow($G1 / 255, 2.2) +
+                    0.0722 * pow($B1 / 255, 2.2);
+
+                $L2 = 0.2126 * pow($R2BlackColor / 255, 2.2) +
+                    0.7152 * pow($G2BlackColor / 255, 2.2) +
+                    0.0722 * pow($B2BlackColor / 255, 2.2);
+
+                $contrastRatio = 0;
+                if ($L1 > $L2) {
+                    $contrastRatio = (int)(($L1 + 0.05) / ($L2 + 0.05));
+                } else {
+                    $contrastRatio = (int)(($L2 + 0.05) / ($L1 + 0.05));
+                }
+                if ($contrastRatio > 5) {
+                    return '#000000';
+                } else { 
+                    return '#FFFFFF';
+                }
+        };
+    </script>
+    <div class="footer-basic">
+        <footer>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="{{ url_for('report') }}">Experience any bugs? Have any suggestions? Click Here!</a></li>
+            </ul>
+            <p class="copyright">EasyACO © 2020</p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
