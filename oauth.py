@@ -1,8 +1,8 @@
 import requests
 
 class Oauth(object):
-    client_id = "705954263565860937"
-    client_secret = "11knxgIhF9QuIT3piDgK89yixAZdgeJQ"
+    client_id = "REMOVED"
+    client_secret = "REMOVED"
     scope = "identify"
     redirect_uri = "https://easyaco.com/login"
     discord_login_url = "https://discordapp.com/api/oauth2/authorize?client_id={}&redirect_uri={}&response_type=code&scope={}".format(client_id,redirect_uri,scope)
