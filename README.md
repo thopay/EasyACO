@@ -107,4 +107,4 @@ Distributed under the MIT License.
 
 Thomas - [@th___mas](https://twitter.com/th___mas) - me@th-mas.dev
 
-Project Link: [https://github.com/th-ms/EasyACO](https://github.com/th-ms/interestUpper)
+Project Link: [https://github.com/th-ms/EasyACO](https://github.com/th-ms/EasyACO)
