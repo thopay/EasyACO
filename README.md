@@ -67,7 +67,7 @@ To get a local copy up and running follow these simple example steps.
 
 1. Clone the repo
 ```sh
-git clone https://github.com/th-ms/EasyACO.git
+git clone https://github.com/thopay/EasyACO.git
 ```
 2. Pip install from requirements
 3. Run the app
