@@ -7,14 +7,14 @@
   <p align="center">
     A completely modular sneaker slot platform
     <br />
-    <a href="https://github.com/th-ms/EasyACO"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/thopay/EasyACO"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://glacial-eyrie-77564.herokuapp.com/">Live Demo</a>
     .
-    <a href="https://github.com/th-ms/EasyACO">Report Bug</a>
+    <a href="https://github.com/thopay/EasyACO">Report Bug</a>
     ·
-    <a href="https://github.com/th-ms/EasyACO">Request Feature</a>
+    <a href="https://github.com/thopay/EasyACO">Request Feature</a>
   </p>
 </p>
 
@@ -78,7 +78,7 @@ python app.py
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/th-ms/EasyACO/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/thopay/EasyACO/issues) for a list of proposed features (and known issues).
 
 
 
@@ -100,4 +100,4 @@ Contributions are what make the open source community such an amazing place to b
 
 Thomas - [@th___mas](https://twitter.com/th___mas) - me@th-mas.dev
 
-Project Link: [https://github.com/th-ms/EasyACO](https://github.com/th-ms/EasyACO)
+Project Link: [https://github.com/thopay/EasyACO](https://github.com/thopay/EasyACO)
